@@ -1,0 +1,35 @@
+library(igraph)
+
+# Read data
+trumpworld.org <- read.csv("trumpworld_data.csv")
+trumpworld.org.ownership <- subset(trumpworld.org, Connection=="Ownership")[,1:2]
+
+# Create graph of ownerships
+org.ownership <- graph.edgelist(as.matrix(trumpworld.org.ownership))
+
+# Analysis
+nrow(trumpworld.org.ownership)
+length(unique(c(trumpworld.org.ownership[,1], trumpworld.org.ownership[,2])))
+
+# Plot Graph
+par(mar=rep(0,4))
+plot(org.ownership,
+     layout=layout.fruchterman.reingold,
+     vertex.label=NA,
+     vertex.size=2,
+     edge.arrow.size=.1
+)
+
+# Find most connected firm
+which.max(degree(org.ownership))
+# Create subnetworks
+org.ownership.d <- decompose(org.ownership)
+# Find largest subnetwork
+largest <- which.max(sapply(org.ownership.d, diameter))
+# Plot largest subnetwork
+plot(org.ownership.d[[largest]],
+     layout=layout.fruchterman.reingold,
+     vertex.label.cex=.5,
+     vertex.size=5,
+     edge.arrow.size=.1
+)
